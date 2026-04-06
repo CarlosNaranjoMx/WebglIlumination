@@ -1,96 +1,161 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shader Lab — WebGL</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    body {
+      min-height: 100vh;
+      background: #0d0f14;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
 
-  <link rel="stylesheet" href="css/style.css">
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/8.2.7/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/8.2.7/firebase-auth.js"></script>
-    <script defer src="/__/firebase/8.2.7/firebase-database.js"></script>
-    <script defer src="/__/firebase/8.2.7/firebase-firestore.js"></script>
-    <script defer src="/__/firebase/8.2.7/firebase-functions.js"></script>
-    <script defer src="/__/firebase/8.2.7/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/8.2.7/firebase-storage.js"></script>
-    <script defer src="/__/firebase/8.2.7/firebase-analytics.js"></script>
-    <script defer src="/__/firebase/8.2.7/firebase-remote-config.js"></script>
-    <script defer src="/__/firebase/8.2.7/firebase-performance.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #64ffda;
+      margin-bottom: 0.5rem;
+    }
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="center01">
-      <h1>Practica 04</h1>
-      <a href="phong.html"><button type="button" class="btn btn-primary">Phong</button></a>
-      <a href="toon.html"><button type="button" class="btn btn-primary">Toon</button></a>
-      <a href="z-buffer.html"><button type="button" class="btn btn-primary">z-buffer</button></a>
-      <a href="bezier00.html"><button type="button" class="btn btn-primary">bezier </button></a>
-      <a href="bezier.html"><button type="button" class="btn btn-primary">bezier cuadratica</button></a>
-      
-    </div>
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #64ffda 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    .subtitle {
+      margin-top: 0.75rem;
+      color: #94a3b8;
+      font-size: 1rem;
+    }
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .card {
+      background: #161b27;
+      border: 1px solid #1e2a3a;
+      border-radius: 14px;
+      padding: 1.75rem 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #64ffda55;
+      box-shadow: 0 8px 32px #64ffda18;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: #0f2027;
+      color: #64ffda;
+      border: 1px solid #64ffda33;
+      margin-top: auto;
+      width: fit-content;
+    }
+
+    .card.disabled {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    footer {
+      margin-top: 3.5rem;
+      font-size: 0.75rem;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="eyebrow">WebGL · Iluminación</p>
+    <h1>Shader Lab</h1>
+    <p class="subtitle">Experimentos de iluminación y renderizado en tiempo real</p>
+  </header>
+
+  <div class="grid">
+
+    <a href="phong.html" class="card">
+      <div class="card-title">Phong</div>
+      <div class="card-desc">Modelo clásico de iluminación con componentes ambiental, difusa y especular.</div>
+      <span class="card-tag">Iluminación</span>
+    </a>
+
+    <a href="toon.html" class="card">
+      <div class="card-title">Toon</div>
+      <div class="card-desc">Cel-shading con bandas discretas de color para efecto caricatura.</div>
+      <span class="card-tag">Non-photorealistic</span>
+    </a>
+
+    <a href="z-buffer.html" class="card">
+      <div class="card-title">Z-buffer</div>
+      <div class="card-desc">Visualización del buffer de profundidad para gestión de oclusión entre objetos.</div>
+      <span class="card-tag">Profundidad</span>
+    </a>
+
+    <a href="bezier00.html" class="card">
+      <div class="card-title">Bezier</div>
+      <div class="card-desc">Curvas de Bézier lineales y cuadráticas renderizadas con WebGL.</div>
+      <span class="card-tag">Geometría</span>
+    </a>
+
+    <a href="bezier.html" class="card">
+      <div class="card-title">Bezier cuadrática</div>
+      <div class="card-desc">Interpolación de puntos con la fórmula cuadrática de Bézier en 3D.</div>
+      <span class="card-tag">Geometría</span>
+    </a>
+
+  </div>
+
+  <footer>WebGL · GLSL · CarlosNaranjoMx</footer>
+
+</body>
 </html>

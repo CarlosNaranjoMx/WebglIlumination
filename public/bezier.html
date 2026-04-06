@@ -32,7 +32,6 @@
 
 		</style>
     <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
 	</head>
 
 
@@ -58,7 +57,7 @@
         <button class="radius01 center01">GO</button>
     </div>
 
-    <script src="javascript/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
 		<script>
 
 			const renderer = new THREE.WebGLRenderer();
@@ -85,28 +84,10 @@
       var line;
       var points;
 
-      //La prueba del vector
-      // var vector01 = new THREE.Vector3(0,1,1);
-      // vector01.addScaledVector(vector01,2.0);
-      // console.log(vector01.y)
-      //Formula no cuadratica
-      //B(t)=P0+(P1-P0)t=(1-t)P0+tP1, t e [0,1]
-      //Formula cuadratica de las curvas de bezier
-      //
-      ///////////         FUNCION DE ANIMACION    ///////
       points = [];
       var p0 = new THREE.Vector3( 20, 0, 0 );
       var p1 = new THREE.Vector3( 0, 0, 0 );
       var p2 = new THREE.Vector3( 0, 20, 0 );
-
-      // function B(t,p0,p1) {
-      //   var tmp00 = (new THREE.Vector3()).addScaledVector(p0,t);
-      //   var tmp01 = (new THREE.Vecotor3()).addVectors(p0,tmp00);
-      //   var tmp02 = (new THREE.Vector3()).addScaledVector(p1,-t);
-      //   return (new THREE.Vector3().addVectors(tmp01,tmp02));
-      // }
-
-
 
       points.push( p0 );
       points.push( p1 );
@@ -115,33 +96,19 @@
         var tmp00 = (new THREE.Vector3()).addScaledVector(p0 , Math.pow((1-t),2));
         var tmp01 = (new THREE.Vector3()).addScaledVector(p1, 2*t*(1-t)  );
         var tmp02 = (new THREE.Vector3()).addScaledVector(p2, t*t );
-        console.log("$t")
         tmp00.addVectors(tmp00,tmp01);
         tmp00.addVectors(tmp00,tmp02);
-        console.log(tmp00);
         points.push( tmp00);
-
       }
 
-      
       const geometry = new THREE.BufferGeometry().setFromPoints( points );
-      // Propiedades de los puntos
       var dotMaterial = new THREE.PointsMaterial( { size: 2, sizeAttenuation: false } );
       var dot = new THREE.Points( geometry, dotMaterial );
       scene.add( dot );
 
-// se llama infinitamente (?)
       const animate = function () {
-        //Aquí se llama a la funcion de animacion otra vez
         requestAnimationFrame( animate );
-
-
-
-
-
-
         renderer.render( scene, camera );
-        
 			};
 			animate();
 

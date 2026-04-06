@@ -116,7 +116,7 @@ void main() {
     });
     geometry.computeFaceNormals(); geometry.computeVertexNormals();
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, -0.7, 0); mesh.rotation.set(0, -Math.PI/2, 0); mesh.scale.set(7,7,7);
+    mesh.position.set(0, -0.7, 0); mesh.rotation.set(0, 130 * Math.PI / 180, 0); mesh.scale.set(7,7,7);
     scene.add(mesh); animate();
   });
 
@@ -200,8 +200,7 @@ void main() {
   document.getElementById('btn-right').addEventListener('click', function(){ rotationSpeed-=STEP; paused=false; });
   document.getElementById('btn-pause').addEventListener('click', function(){
     if (!paused) {
-      savedSpeed=rotationSpeed; rotationSpeed=0; paused=true; totalDeg=0;
-      document.getElementById('deg-counter').textContent='0°';
+      savedSpeed=rotationSpeed; rotationSpeed=0; paused=true;
       this.querySelector('svg').innerHTML='<circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/><polygon points="10,8 20,14 10,20" fill="#64ffda"/>';
     } else {
       rotationSpeed=savedSpeed||STEP; paused=false;

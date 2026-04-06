@@ -1,117 +1,90 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>My first three.js app</title>
-		<style>
-			body { margin: 0; }
+<head>
+  <meta charset="utf-8">
+  <title>Bezier — Shader Lab</title>
+  <style>body{margin:0;}</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
+</head>
+<body>
 
-      .bloque01 {
-        width: 10rem;
-        position: fixed;
-        left:3rem;
-        top:3rem;
-        background-color: #fff;
-      }
+<style>
+#panel { position:fixed; top:1.5rem; left:1.5rem; background:rgba(13,15,20,0.85); border:1px solid rgba(100,255,218,0.15); border-radius:14px; padding:1rem 1.25rem; backdrop-filter:blur(10px); font-family:'Segoe UI',system-ui,sans-serif; min-width:160px; display:flex; flex-direction:column; gap:0.75rem; z-index:100; }
+.panel-label { font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:#64ffda; }
+.panel-desc { font-size:0.75rem; color:#94a3b8; line-height:1.5; }
+.divider { height:1px; background:rgba(100,255,218,0.08); }
+#btn-home { display:flex; align-items:center; gap:0.4rem; background:none; border:1px solid rgba(100,255,218,0.2); border-radius:8px; padding:0.4rem 0.6rem; color:#64ffda; font-size:0.72rem; font-family:'Segoe UI',system-ui,sans-serif; cursor:pointer; text-decoration:none; transition:background 0.15s; }
+#btn-home:hover { background:rgba(100,255,218,0.1); }
+#rot-controls { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); display:flex; gap:0.75rem; align-items:center; background:rgba(13,15,20,0.75); border:1px solid rgba(100,255,218,0.15); border-radius:999px; padding:0.5rem 1.25rem; backdrop-filter:blur(8px); z-index:100; }
+#rot-controls button { background:none; border:none; cursor:pointer; padding:0.35rem; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.15s; }
+#rot-controls button:hover { background:rgba(100,255,218,0.12); }
+#rot-controls button svg { display:block; }
+#deg-counter { font-size:0.78rem; font-family:monospace; color:#64ffda; min-width:4.5ch; text-align:center; }
+</style>
 
-      .center01 {
-        margin: auto;
-        width: 100%;
-        color: #fff;
-        background-color: rgb(57, 60, 219);
-      }
-      
-      .radius01 {
-        border-radius: 1em;
-      }
+<div id="panel">
+  <a href="./index.html" id="btn-home">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 6.5L8 1l7 5.5V15H10v-4H6v4H1V6.5Z" stroke="#64ffda" stroke-width="1.4" stroke-linejoin="round" fill="none"/></svg>
+    Inicio
+  </a>
+  <div class="divider"></div>
+  <div class="panel-label">Bezier</div>
+  <div class="panel-desc">Curva cuadrática con polígono de control visible. La línea azul conecta P0–P1–P2; la curva es jalada por P1 sin pasar por él.</div>
+</div>
 
-      .inline01 {
-        width: 2em;
-        display: inline;
-      }
+<div id="rot-controls">
+  <button id="btn-left" title="Rotar izquierda">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/><polyline points="16,9 10,14 16,19" stroke="#64ffda" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button id="btn-pause" title="Pausar / Reanudar">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/><rect x="10" y="9" width="3" height="10" rx="1" fill="#64ffda"/><rect x="15" y="9" width="3" height="10" rx="1" fill="#64ffda"/></svg>
+  </button>
+  <span id="deg-counter">0°</span>
+  <button id="btn-right" title="Rotar derecha">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/><polyline points="12,9 18,14 12,19" stroke="#64ffda" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
 
-		</style>
-	</head>
-
-
-	<body>
-
-    <div class="bloque01 radius01" >
-      <p class="card-text"><b>p</b>pausar <b>   y</b> <b>Y</b> rotar.</p>
-      <p class="card-text"><b>f</b> <b>F</b> z far</p>
-        <input type="range" id="z_far" name="volume" value="20" list="tickmarks">
-        <datalist id="tickmarks">
-          <option value="0" label="0%">
-          <option value="10">
-          <option value="20">
-          <option value="30">
-          <option value="40">
-          <option value="50" label="50%">
-          <option value="60">
-          <option value="70">
-          <option value="80">
-          <option value="90">
-          <option value="100" label="100%">
-        </datalist>
-        <button class="radius01 center01">GO</button>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
-		<script>
-
-			const renderer = new THREE.WebGLRenderer();
-      renderer.setSize( window.innerWidth, window.innerHeight );
-
-      var vector01 = {x: -10, y:0, z:0}
-      document.getElementById("z_far").addEventListener("change", (event) => {
-                    console.log(event.target.value); 
-                    vector01.x = parseInt(event.target.value)+0.0;
-      });
-
-      document.body.appendChild( renderer.domElement );
-
-      const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
-      camera.position.set( 0, 0, 100 );
-      camera.lookAt( 0, 0, 0 );
-      const scene = new THREE.Scene();
-
-      const material01 = new THREE.LineBasicMaterial({ color: 0x0000ff });
-
-      const points01 = [];
-      let punto01 = new THREE.Vector3( - 10, 0, 0 );
-      punto01.name = "P0"
-      points01.push( punto01 );
-      points01.push( new THREE.Vector3( 0, 10, 0 ) );
-      points01.push( new THREE.Vector3( 10, 0, 0 ) );
-
-      const geometry01 = new THREE.BufferGeometry().setFromPoints( points01 );
-      const line01 = new THREE.Line( geometry01, material01 );
-      scene.add( line01 );
-
-      var points = [];
-      var p0 = new THREE.Vector3( 20, 0, 0 );
-      var p1 = new THREE.Vector3( 0, 0, 0 );
-      var p2 = new THREE.Vector3( 0, 20, 0 );
-
-      points.push( p0 );
-      points.push( p1 );
-      points.push( p2 );
-      for (let t = 0; t < 1; t+=0.1) {
-        var tmp00 = (new THREE.Vector3()).addScaledVector(p0 , Math.pow((1-t),2));
-        var tmp01 = (new THREE.Vector3()).addScaledVector(p1, 2*t*(1-t)  );
-        var tmp02 = (new THREE.Vector3()).addScaledVector(p2, t*t );
-        tmp00.addVectors(tmp00,tmp01);
-        tmp00.addVectors(tmp00,tmp02);
-        points.push( tmp00);
-      }
-
-      const geometry = new THREE.BufferGeometry().setFromPoints( points );
-      var dotMaterial = new THREE.PointsMaterial( { size: 2, sizeAttenuation: false } );
-      var dot = new THREE.Points( geometry, dotMaterial );
-      scene.add( dot );
-
-      renderer.render( scene, camera );
-
-		</script>
-	</body>
+<script>
+  var renderer=new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setClearColor(0x0d0f14);
+  document.body.appendChild(renderer.domElement);
+  var camera=new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,500);
+  camera.position.set(0,0,100); camera.lookAt(0,0,0);
+  var scene=new THREE.Scene();
+  var group=new THREE.Object3D(); scene.add(group);
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-10,0,0),new THREE.Vector3(0,10,0),new THREE.Vector3(10,0,0)]),new THREE.LineBasicMaterial({color:0x378add})));
+  var pts=[]; var p0=new THREE.Vector3(20,0,0),p1=new THREE.Vector3(0,0,0),p2=new THREE.Vector3(0,20,0);
+  pts.push(p0); pts.push(p1); pts.push(p2);
+  for(var t=0;t<1;t+=0.1){
+    var a=(new THREE.Vector3()).addScaledVector(p0,Math.pow(1-t,2));
+    var b=(new THREE.Vector3()).addScaledVector(p1,2*t*(1-t));
+    var c=(new THREE.Vector3()).addScaledVector(p2,t*t);
+    a.addVectors(a,b); a.addVectors(a,c); pts.push(a);
+  }
+  group.add(new THREE.Points(new THREE.BufferGeometry().setFromPoints(pts),new THREE.PointsMaterial({size:2,sizeAttenuation:false,color:0x64ffda})));
+  var rotationSpeed=0,totalDeg=0;
+  var clock=new THREE.Clock();
+  window.addEventListener('resize',function(){ camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight); });
+  (function animate(){
+    requestAnimationFrame(animate);
+    var delta=clock.getDelta();
+    group.rotation.y+=delta*rotationSpeed;
+    totalDeg+=Math.abs(delta*rotationSpeed)*180/Math.PI;
+    document.getElementById('deg-counter').textContent=Math.round(totalDeg)+'°';
+    renderer.render(scene,camera);
+  }());
+  var STEP=0.5,paused=false,savedSpeed=0;
+  document.getElementById('btn-left').addEventListener('click',function(){ rotationSpeed+=STEP; paused=false; });
+  document.getElementById('btn-right').addEventListener('click',function(){ rotationSpeed-=STEP; paused=false; });
+  document.getElementById('btn-pause').addEventListener('click',function(){
+    if(!paused){ savedSpeed=rotationSpeed; rotationSpeed=0; paused=true; totalDeg=0; document.getElementById('deg-counter').textContent='0°';
+      this.querySelector('svg').innerHTML='<circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/><polygon points="10,8 20,14 10,20" fill="#64ffda"/>';
+    } else { rotationSpeed=savedSpeed||STEP; paused=false;
+      this.querySelector('svg').innerHTML='<circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/><rect x="10" y="9" width="3" height="10" rx="1" fill="#64ffda"/><rect x="15" y="9" width="3" height="10" rx="1" fill="#64ffda"/>';
+    }
+  });
+</script>
+</body>
 </html>

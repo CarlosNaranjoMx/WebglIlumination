@@ -1,23 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-	<meta charset="utf-8">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-	<script src="https://cdn.jsd elivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shader Lab — WebGL</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-	<link rel="stylesheet" href="style.css">
+    body {
+      min-height: 100vh;
+      background: #0d0f14;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
 
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #64ffda;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #64ffda 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin-top: 0.75rem;
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      width: 100%;
+      max-width: 860px;
+    }
+
+    .card {
+      background: #161b27;
+      border: 1px solid #1e2a3a;
+      border-radius: 14px;
+      padding: 1.75rem 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #64ffda55;
+      box-shadow: 0 8px 32px #64ffda18;
+    }
+
+    .card-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: #0f2027;
+      color: #64ffda;
+      border: 1px solid #64ffda33;
+      margin-top: auto;
+      width: fit-content;
+    }
+
+    .card.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    footer {
+      margin-top: 3.5rem;
+      font-size: 0.75rem;
+      color: #334155;
+    }
+  </style>
 </head>
 <body>
-<!-- <div class="center01"> -->
-	<h1>Practica 04</h1>
-	<a href="phong.html"><button type="button" class="btn btn-primary">Phong</button></a>
-	<a href="toon.html"><button type="button" class="btn btn-primary">Toon</button></a>
-	<a href="z-buffer.html"><button type="button" class="btn btn-primary">z-buffer</button></a>
-	
-	<button type="button" class="btn btn-primary" >bezier</button>
-<!-- </div> -->
+
+  <header>
+    <p class="eyebrow">WebGL · Iluminación</p>
+    <h1>Shader Lab</h1>
+    <p class="subtitle">Experimentos de iluminación y renderizado en tiempo real</p>
+  </header>
+
+  <div class="grid">
+
+    <a href="phong.html" class="card">
+      <div class="card-icon">💡</div>
+      <div class="card-title">Phong</div>
+      <div class="card-desc">Modelo clásico de iluminación con componentes ambiental, difusa y especular.</div>
+      <span class="card-tag">Iluminación</span>
+    </a>
+
+    <a href="toon.html" class="card">
+      <div class="card-icon">🎨</div>
+      <div class="card-title">Toon</div>
+      <div class="card-desc">Shading de cel-shading con bandas discretas de color para efecto caricatura.</div>
+      <span class="card-tag">Non-photorealistic</span>
+    </a>
+
+    <a href="z-buffer.html" class="card">
+      <div class="card-icon">📐</div>
+      <div class="card-title">Z-buffer</div>
+      <div class="card-desc">Visualización del buffer de profundidad para gestión de oclusión entre objetos.</div>
+      <span class="card-tag">Profundidad</span>
+    </a>
+
+    <div class="card disabled">
+      <div class="card-icon">〰️</div>
+      <div class="card-title">Bezier</div>
+      <div class="card-desc">Curvas y superficies de Bézier en WebGL.</div>
+      <span class="card-tag">Próximamente</span>
+    </div>
+
+  </div>
+
+  <footer>WebGL · GLSL · CarlosNaranjoMx</footer>
 
 </body>
-
 </html>

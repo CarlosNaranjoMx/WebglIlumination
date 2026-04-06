@@ -80,12 +80,8 @@ void main()
 					// mesh.scale.set( 7, 7, 7 );
 					mesh.scale.set( 0.01, 0.01, 0.01 );
 
-					// mesh.castShadow = true;
-					// mesh.receiveShadow = true;
-
 					scene.add( mesh );
     
-                    // console.log("loader event"); 
                     animate();
                     
 				} );
@@ -127,7 +123,6 @@ void main()
 				camera.position.set( 3, 1, 3 );
 				cameraTarget = new THREE.Vector3( 0, -0.25, 0 );
 				scene = new THREE.Scene();
-				// scene.fog = new THREE.Fog( 0x72645b, 2, 30 );
 
 				//shader uniforms
 				uniforms = {z_far: {type: "f", value:20.0}};
@@ -139,19 +134,12 @@ void main()
 
 				container.appendChild( renderer.domElement );
 
-				//input change
 				document.getElementById("z_far").addEventListener("change", (event) => {
                     console.log(event.target.value); 
                     uniforms.z_far.value = parseInt(event.target.value)+0.0;
                 });
 				
-                // console.log("loader load"); 
-                // loader.load( './modelos/dragon100k.ply' );
                 loader.load( './modelos/Garuda and Vishnu.ply' );
-                // console.log("end loader load"); 
-                
-
-				
 			}
 
 			
@@ -174,5 +162,88 @@ void main()
 
 		</script>
 		<link rel="stylesheet" href="./style.css" type="text/css">
+
+<!-- controles de rotacion -->
+<style>
+#rot-controls {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  background: rgba(13,15,20,0.75);
+  border: 1px solid rgba(100,255,218,0.15);
+  border-radius: 999px;
+  padding: 0.5rem 1.25rem;
+  backdrop-filter: blur(8px);
+}
+#rot-controls button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+#rot-controls button:hover { background: rgba(100,255,218,0.12); }
+#rot-controls button svg { display: block; }
+</style>
+
+<div id="rot-controls">
+  <button id="btn-left" title="Rotar izquierda">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/>
+      <polyline points="16,9 10,14 16,19" stroke="#64ffda" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <button id="btn-pause" title="Pausar / Reanudar">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/>
+      <rect x="10" y="9" width="3" height="10" rx="1" fill="#64ffda"/>
+      <rect x="15" y="9" width="3" height="10" rx="1" fill="#64ffda"/>
+    </svg>
+  </button>
+  <button id="btn-right" title="Rotar derecha">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/>
+      <polyline points="12,9 18,14 12,19" stroke="#64ffda" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+(function(){
+  var paused = false;
+  var savedSpeed = 0;
+  var STEP = 0.5;
+
+  document.getElementById('btn-left').addEventListener('click', function(){
+    rotationSpeed += STEP;
+    paused = false;
+  });
+  document.getElementById('btn-right').addEventListener('click', function(){
+    rotationSpeed -= STEP;
+    paused = false;
+  });
+  document.getElementById('btn-pause').addEventListener('click', function(){
+    if (!paused) {
+      savedSpeed = rotationSpeed;
+      rotationSpeed = 0;
+      paused = true;
+      this.querySelector('svg').innerHTML = '<circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/><polygon points="10,8 20,14 10,20" fill="#64ffda"/>';
+    } else {
+      rotationSpeed = savedSpeed || STEP;
+      paused = false;
+      this.querySelector('svg').innerHTML = '<circle cx="14" cy="14" r="13" stroke="#64ffda" stroke-width="1.2"/><rect x="10" y="9" width="3" height="10" rx="1" fill="#64ffda"/><rect x="15" y="9" width="3" height="10" rx="1" fill="#64ffda"/>';
+    }
+  });
+}());
+</script>
+
 	</body>
 </html>
